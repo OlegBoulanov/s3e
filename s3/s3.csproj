@@ -48,7 +48,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Commandlineparameters>get distrib.elizacorp.com /Users/olegb/Downloads/Apps/ --sub --nogui --key:AKIAIY6OVOKSSVMLBQOQ --secret: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</Commandlineparameters>
+    <Commandlineparameters>get distrib.elizacorp.com /Users/olegb/Downloads/Apps/ --sub --nogui </Commandlineparameters>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
