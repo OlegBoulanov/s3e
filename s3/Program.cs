@@ -44,15 +44,6 @@ namespace s3
 
             try
             {
-
-				/* open for debugging
-				Settings.Default.AccessKeyId = "AKIAIY6OVOKSSVMLBQOQ";
-				Settings.Default.AccessKeySecret = "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";
-				originalArgs = new string[]{
-					"get", "distrib.elizacorp.com", "/Users/olegb/Downloads/Apps/",
-					"--sub", "--nogui"
-				};*/
-
                 CommandLine cl = new CommandLine(originalArgs);
 
                 if (!(cl.command is Auth || cl.command is Help))
