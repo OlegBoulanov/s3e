@@ -168,7 +168,7 @@ namespace s3.Commands
 								continue;
 							}
 							thisLastModified = File.GetLastWriteTimeUtc (thisFilename);
-                            fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
+							fs = null;
                         }
                         else
                         {
@@ -185,8 +185,12 @@ namespace s3.Commands
 						{
 							GetResponse getResp = svc.getIfModifiedSince(bucket, entry.Key, thisLastModified, true);
 
-                        	StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
-                        	getResp.Object.Stream.Close();
+							if(fs == null) fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
+
+                        	//StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
+							StreamToStream(getResp.Object.Stream, fs, null, entry.Key, entry.Size);
+
+							getResp.Object.Stream.Close();
 
                         	if (!big)
                             	fs.Close();
@@ -240,7 +244,7 @@ namespace s3.Commands
 
         private static void StreamToStream(Stream sIn, Stream sOut, string md5Expected, string key, long totalBytes)
         {
-            MD5 md5Hasher = MD5.Create();
+            MD5 md5Hasher = string.IsNullOrEmpty (md5Expected) ? null : MD5.Create();
             int Length = 256;
             Byte[] buffer = new Byte[Length];
             long bytesSoFar = 0;
@@ -250,7 +254,7 @@ namespace s3.Commands
             {
                 int bytesRead = sIn.Read(buffer, 0, Length);
                 if (bytesRead == 0) break;
-                md5Hasher.TransformBlock(buffer, 0, bytesRead, buffer, 0);
+                if(md5Hasher != null) md5Hasher.TransformBlock(buffer, 0, bytesRead, buffer, 0);
                 sOut.Write(buffer, 0, bytesRead);
                 bytesSoFar += bytesRead;
                 ct++;
@@ -259,10 +263,12 @@ namespace s3.Commands
                     Progress.reportProgress(key, bytesSoFar, totalBytes);
             }
 
-            md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
-            string md5Calculated = "\"" + Utils.BytesToHex(md5Hasher.Hash) + "\"";
-            if (!md5Calculated.Equals(md5Expected, StringComparison.InvariantCultureIgnoreCase))
-                throw new Exception("MD5 mismatch on download.  Possible data corruption!");
-        }
-    }
+			if (md5Hasher != null) {
+				md5Hasher.TransformFinalBlock (new byte[0], 0, 0);
+				string md5Calculated = "\"" + Utils.BytesToHex (md5Hasher.Hash) + "\"";
+				if (!md5Calculated.Equals (md5Expected, StringComparison.InvariantCultureIgnoreCase))
+					throw new Exception ("MD5 mismatch on download.  Possible data corruption!");
+			}
+		}
+	}
 }
