@@ -16,7 +16,7 @@ namespace s3.Commands
 {
     class Get : Command
     {
-        bool big, sub;
+        bool big, sub, md5;
         string resource, filename;
         string bucket, key;
         bool explicitFilename;
@@ -30,6 +30,7 @@ namespace s3.Commands
 
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
+            md5 = cl.options.ContainsKey(typeof(Md5));
 
             if (big && sub)
                 throw new SyntaxException("The /big option is not currently compatible with the /sub option");
@@ -187,8 +188,7 @@ namespace s3.Commands
 
 							if(fs == null) fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
 
-                        	//StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
-							StreamToStream(getResp.Object.Stream, fs, null, entry.Key, entry.Size);
+                        	StreamToStream(getResp.Object.Stream, fs, md5 ? getResp.Connection.Headers["ETag"] : null, entry.Key, entry.Size);
 
 							getResp.Object.Stream.Close();
 
