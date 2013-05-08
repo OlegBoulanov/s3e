@@ -23,8 +23,8 @@ namespace s3.Options
 
         public void SetFile(string filePath, bool downloaded)
         {
-            string fileBase = Path.ChangeExtension(filePath, null);
-            string fileExt = Path.GetExtension(filePath);
+            string fileBase = Path.ChangeExtension(filePath, null).Replace('/', '\\').ToLower();
+            string fileExt = Path.GetExtension(filePath).ToLower();
             if (!ItemsToInstall.ContainsKey(fileBase)) ItemsToInstall.Add(fileBase, new Dictionary<string, bool>());
             if (!ItemsToInstall[fileBase].ContainsKey(fileExt)) ItemsToInstall[fileBase].Add(fileExt, false);
             ItemsToInstall[fileBase][fileExt] = downloaded;
@@ -50,11 +50,11 @@ namespace s3.Options
                     props.Read(iniPath);
                     if (extInfo[iniExtension]) msiExecKeys = msiExecKeysReinstallAll; 
                 }
-                string command = FormatCommand(msiExecKeys, msiPath, msiArgs, props);
-                Console.WriteLine(command);
+                string cmdLineArgs = FormatCommand(msiExecKeys, msiPath, msiArgs, props);
+                Console.WriteLine("{0} {1}", msiExec, cmdLineArgs);
                 if (doInstall)
                 {
-                    Process process = Process.Start(msiExec, command);
+                    Process process = Process.Start(msiExec, cmdLineArgs);
                     process.WaitForExit();
                     int code = process.ExitCode;
                 }
@@ -64,7 +64,7 @@ namespace s3.Options
         public static string FormatCommand(string msiExecKeys, string path2msi, string msiExecArgs, IDictionary<string, string> props)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("{0} {1} \"{2}\"", msiExec, msiExecKeys, path2msi);
+            sb.AppendFormat("{0} \"{1}\"", msiExecKeys, path2msi);
             if (!string.IsNullOrEmpty(msiExecArgs)) sb.AppendFormat(" {0}", msiExecArgs);
             if (null != props)
             {

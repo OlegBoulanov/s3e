@@ -186,8 +186,6 @@ namespace s3.Commands
 
 						Console.Write(string.Format("{0}/{1} {2} ", bucket, entry.Key, s3.Utils.FormatFileSize(entry.Size)));
 
-                        string thisFileExtension = Path.GetExtension(thisFilename).ToLower();
-
                         if (null != install)
                         {
                             install.SetFile(thisFilename, !File.Exists(thisFilename));
@@ -234,7 +232,7 @@ namespace s3.Commands
 
                     if (null != install)
                     {
-                        install.InstallProducts(false);
+                        install.InstallProducts(true);
                     }
 
                 }
