@@ -1,8 +1,9 @@
-﻿*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/key:<key> /secret:<secret>]
+﻿*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/md5] [/install:<msiexec arguments>] [/key:<key> /secret:<secret>]
 
 Examples:
-s3 get mybucket/pic*
-s3 get mybucket/pictures/ /sub
+ s3 get mybucket/pic*
+ s3 get mybucket/pictures/ /sub
+ s3 get install.elizacorp.com/Region1/Group02/ c:\install\Group02\ /sub /install:"fva"
     
     Gets the specified object(s) from S3. If no filename is supplied then the
     suffix of the key after the final slash is used as the filename, except
@@ -18,6 +19,10 @@ s3 get mybucket/pictures/ /sub
     needed.  This enables a whole directory hierarchy uploaded with 'put /sub' 
     to be downloaded.
     
+    /md5 causes md5 checksum checking after download, and removal of files downloaded  with errors
+
+    /install starts installation of *.msi files after download, setting installation properties from corresponding *.ini files
+
     /key & /secret allow the Amazon S3 access key and secret key to be passed
     on the command line (even if auth has previously been used).
     

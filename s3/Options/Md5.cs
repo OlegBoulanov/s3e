@@ -4,7 +4,7 @@ using System.Text;
 
 namespace s3.Options
 {
-    class Md5
+    class Md5 : Option
     {
     }
 }

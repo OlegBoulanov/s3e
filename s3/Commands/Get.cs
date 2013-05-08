@@ -20,6 +20,7 @@ namespace s3.Commands
         string resource, filename;
         string bucket, key;
         bool explicitFilename;
+        s3.Options.Install install;
 
         const string slashRequiredError = "The first parameter to the get command must have a slash (/) between the bucket name and the key";
 
@@ -30,10 +31,13 @@ namespace s3.Commands
 
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
-            md5 = cl.options.ContainsKey(typeof(Md5));
-
-            if (big && sub)
-                throw new SyntaxException("The /big option is not currently compatible with the /sub option");
+            if (big && sub) throw new SyntaxException("The /big option is not currently compatible with the /sub option");
+            md5 = cl.options.ContainsKey(typeof(s3.Options.Md5));
+            if(cl.options.ContainsKey(typeof(s3.Options.Install)))
+            {
+                if (Utils.IsLinux) throw new SyntaxException("The /install option is not currently supported on Linux");
+                install =  cl.options[typeof(s3.Options.Install)] as s3.Options.Install;
+            }
 
             resource = cl.args[0];
             int firstSlash = resource.IndexOf("/");
@@ -180,11 +184,18 @@ namespace s3.Commands
                             }
                         }
 
-						Console.Write(string.Format("{0}/{1} ", bucket, entry.Key));
+						Console.Write(string.Format("{0}/{1} {2} ", bucket, entry.Key, s3.Utils.FormatFileSize(entry.Size)));
 
-						try
+                        string thisFileExtension = Path.GetExtension(thisFilename).ToLower();
+
+                        if (null != install)
+                        {
+                            install.SetFile(thisFilename, !File.Exists(thisFilename));
+                        }
+
+                        try
 						{
-							GetResponse getResp = svc.getIfModifiedSince(bucket, entry.Key, thisLastModified, true);
+							GetResponse getResp = svc.getIfModifiedSince(bucket, entry.Key, thisLastModified, true);    // may throw 304
 
 							if(fs == null) fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
 
@@ -200,7 +211,13 @@ namespace s3.Commands
 
 							File.SetLastWriteTimeUtc (thisFilename, entry.LastModified);
 							Console.WriteLine ();
-						}
+
+                            if (null != install)
+                            {
+                                // newer file downloaded
+                                install.SetFile(thisFilename, true);
+                            }
+                        }
 						catch(WebException x)
 						{
 							if(x.Message.Contains ("(304)"))
@@ -214,6 +231,12 @@ namespace s3.Commands
 
                     if (big)
                         fs.Close();
+
+                    if (null != install)
+                    {
+                        install.InstallProducts(false);
+                    }
+
                 }
                 catch
                 {

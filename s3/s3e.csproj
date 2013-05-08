@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>s3</RootNamespace>
-    <AssemblyName>s3</AssemblyName>
+    <AssemblyName>s3e</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
@@ -501,8 +501,10 @@
     <Compile Include="Commands\Get.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Put.cs" />
+    <Compile Include="Windows\IniReader.cs" />
     <Compile Include="IterativeList.cs" />
     <Compile Include="Options\Days.cs" />
+    <Compile Include="Options\Install.cs" />
     <Compile Include="Options\Md5.cs" />
     <Compile Include="Options\NoGUI.cs" />
     <Compile Include="Options\StorageClass.cs" />
@@ -533,6 +535,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Windows\MsiProperties.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
