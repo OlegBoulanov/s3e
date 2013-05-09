@@ -159,15 +159,32 @@ namespace s3.Commands
 
                             if (sub)
                             {
-                                thisFilename = Path.Combine(filename, KeyToFilename(entry.Key.Substring(key.Length)));
+                                if ("*" == Path.GetFileNameWithoutExtension(filename))
+                                {
+                                    // replace star with key/prefix:
+                                    //  bucket/path/prefix/[files] c:\local\* /sub ==> c:\local\path\prefix\[files]
+                                    thisFilename = Path.Combine(Path.GetDirectoryName(filename), KeyToFilename(entry.Key));
+                                }
+                                else
+                                {
+                                    // strip key/prefix, leaving only filename:
+                                    //  bucket/path/prefix/[files] c:\local\ /sub ==> c:\local\[files]
+                                    thisFilename = Path.Combine(filename, KeyToFilename(entry.Key.Substring(key.Length)));
+                                }
                                 string directoryName = Path.GetDirectoryName(thisFilename);
                                 if (!Directory.Exists(directoryName))
+                                {
                                     Directory.CreateDirectory(directoryName);
+                                }
                             }
                             else if (explicitFilename)
+                            {
                                 thisFilename = filename;
+                            }
                             else
+                            {
                                 thisFilename = entry.Key.Substring(entry.Key.LastIndexOf("/") + 1);
+                            }
 							if(Path.GetFileName (thisFilename).Trim ().Length == 0)
 							{
 								continue;
