@@ -23,7 +23,7 @@ namespace s3.Options
 
         public void SetFile(string filePath, bool downloaded)
         {
-            string fileBase = Path.ChangeExtension(filePath, null).Replace('/', '\\').ToLower();
+            string fileBase = Path.ChangeExtension(filePath, null).Replace('/', Path.DirectorySeparatorChar).ToLower();
             string fileExt = Path.GetExtension(filePath).ToLower();
             if (!ItemsToInstall.ContainsKey(fileBase)) ItemsToInstall.Add(fileBase, new Dictionary<string, bool>());
             if (!ItemsToInstall[fileBase].ContainsKey(fileExt)) ItemsToInstall[fileBase].Add(fileExt, false);
