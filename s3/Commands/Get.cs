@@ -79,8 +79,8 @@ namespace s3.Commands
                 else
                 {
                     filename = cl.args[1];
-                    if (!Directory.Exists(filename))
-                        throw new SyntaxException("With the /sub option, the second parameter must be an existing directory");
+                    //if (!Directory.Exists(filename))
+                    //    throw new SyntaxException("With the /sub option, the second parameter must be an existing directory");
                 }
             }
         }

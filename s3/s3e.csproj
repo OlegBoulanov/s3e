@@ -515,7 +515,7 @@
       <DependentUpon>Progress.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
-    <Compile Include="Options\Key.cs" />
+    <Compile Include="Options\KeyAndSecret.cs" />
     <Compile Include="Options\Yes.cs" />
     <Compile Include="SyntaxException.cs" />
     <Compile Include="FileDirectoryEnumerator.cs" />

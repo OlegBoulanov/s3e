@@ -36,27 +36,40 @@ namespace s3.Options
             foreach (string fileBase in ItemsToInstall.Keys)
             {
                 Dictionary<string, bool> extInfo = ItemsToInstall[fileBase];
-                string msiPath = extInfo.ContainsKey(msiExtension) ? fileBase + msiExtension : null;
-                string iniPath = extInfo.ContainsKey(iniExtension) ? fileBase + iniExtension : null;
-                Windows.MsiProperties props = null;
+                string msiPath = null;
                 string msiExecKeys = msiExecKeysInstall;
-                if (string.IsNullOrEmpty(iniPath))
+                Windows.MsiProperties msiProps = null;
+                if (extInfo.ContainsKey(msiExtension))
                 {
-                    // remove local?
+                    msiPath = fileBase + msiExtension;
+                    bool msiDownloaded = extInfo[msiExtension];
+                    if (extInfo.ContainsKey(iniExtension))
+                    {
+                        bool iniDownloaded = extInfo[iniExtension];
+                        string iniPath = fileBase + iniExtension;
+                        msiProps = new Windows.MsiProperties();
+                        msiProps.Read(iniPath);
+                        if (iniDownloaded && !msiDownloaded) msiExecKeys = msiExecKeysReinstallAll;
+                    }
+                    else
+                    {
+                        // should we remove existing local one too?
+                    }
                 }
-                else
+                // got msi? Install it.
+                if (!string.IsNullOrEmpty(msiPath))
                 {
-                    props = new Windows.MsiProperties();
-                    props.Read(iniPath);
-                    if (extInfo[iniExtension]) msiExecKeys = msiExecKeysReinstallAll; 
-                }
-                string cmdLineArgs = FormatCommand(msiExecKeys, msiPath, msiArgs, props);
-                Console.WriteLine("{0} {1}", msiExec, cmdLineArgs);
-                if (doInstall)
-                {
-                    Process process = Process.Start(msiExec, cmdLineArgs);
-                    process.WaitForExit();
-                    int code = process.ExitCode;
+                    string cmdLineArgs = FormatCommand(msiExecKeys, msiPath, msiArgs, msiProps);
+                    Console.WriteLine("{0} {1}", msiExec, cmdLineArgs);
+                    if (doInstall)
+                    {
+                        Process process = Process.Start(msiExec, cmdLineArgs);
+                        process.WaitForExit();
+                        if (0 != process.ExitCode)
+                        {
+                            Console.WriteLine("{0} exited with {1}", msiExec, process.ExitCode);
+                        }
+                    }
                 }
             }
         }
