@@ -43,12 +43,15 @@ namespace s3.Options
                 {
                     msiPath = fileBase + msiExtension;
                     bool msiDownloaded = extInfo[msiExtension];
+                    // got ini? read the props and decide if reinstall is needed
                     if (extInfo.ContainsKey(iniExtension))
                     {
+                        // is it new? (assume props change in that case)
                         bool iniDownloaded = extInfo[iniExtension];
                         string iniPath = fileBase + iniExtension;
                         msiProps = new Windows.MsiProperties();
                         msiProps.Read(iniPath);
+                        // if only props changed, we'd need to do full reinstall to set them...
                         if (iniDownloaded && !msiDownloaded) msiExecKeys = msiExecKeysReinstallAll;
                     }
                     else
@@ -78,7 +81,6 @@ namespace s3.Options
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} \"{1}\"", msiExecKeys, path2msi);
-            if (!string.IsNullOrEmpty(msiExecArgs)) sb.AppendFormat(" {0}", msiExecArgs);
             if (null != props)
             {
                 foreach (string propName in props.Keys)
@@ -86,6 +88,8 @@ namespace s3.Options
                     sb.AppendFormat(" {0}=\"{1}\"", propName, props[propName]);
                 }
             }
+            // now apply extra args, so they may override ini props
+            if (!string.IsNullOrEmpty(msiExecArgs)) sb.AppendFormat(" {0}", msiExecArgs);
             return sb.ToString();
         }
     }
