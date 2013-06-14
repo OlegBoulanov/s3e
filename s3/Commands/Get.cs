@@ -231,7 +231,8 @@ namespace s3.Commands
                         	sequence++;
 
 							File.SetLastWriteTimeUtc (thisFilename, entry.LastModified);
-							Console.WriteLine ();
+
+                            Console.WriteLine();
 
                             if (null != install)
                             {

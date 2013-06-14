@@ -82,7 +82,7 @@ namespace s3.Commands
                 info = Console.ReadKey(true);
             }
 
-            Console.WriteLine();
+            Console.Error.WriteLine();
             return password.Trim();
         }
 
