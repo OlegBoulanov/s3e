@@ -244,7 +244,7 @@ namespace s3.Commands
 						{
 							if(x.Message.Contains ("(304)"))
 							{
-                                Console.Error.WriteLine(" Not modified");
+                                Console.WriteLine(" Not modified");
 								continue;
 							}
 							throw;
