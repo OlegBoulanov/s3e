@@ -41,7 +41,7 @@ namespace s3.Commands
                     }
                 }
                 else
-                    Console.WriteLine("There is no help associated with that command. Type 's3 help' for general help.");
+                    Console.Error.WriteLine("There is no help associated with that command. Type 's3 help' for general help.");
             }
         }
 

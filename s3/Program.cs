@@ -50,7 +50,7 @@ namespace s3
                 {
                     if ((Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "") && !Key.KeyOverridden)
                     {
-                        Console.WriteLine(
+                        Console.Error.WriteLine(
 @"Your Amazon Access Key is required to access S3 and will be saved to your
 Windows user profile.  Optionally, you can specify a password for 128-bit 
 TripleDES encryption of the Secret Access Key, but that means entering the 

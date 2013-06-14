@@ -19,7 +19,7 @@ namespace s3.Options
                 return true;
             else
             {
-                Console.Write(prompt + " ");
+                Console.Error.Write(prompt + " ");
                 return Console.ReadLine().StartsWith("y", StringComparison.InvariantCultureIgnoreCase);
             }
         }

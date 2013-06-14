@@ -143,7 +143,7 @@ namespace s3.Commands
                         try { fs.Close(); }
                         catch { }
                         File.Delete(fs.Name);
-                        Console.WriteLine("Deleted partial file: " + fs.Name);
+                        Console.Error.WriteLine("Deleted partial file: " + fs.Name);
                     }
                 };
 
@@ -243,7 +243,7 @@ namespace s3.Commands
 						{
 							if(x.Message.Contains ("(304)"))
 							{
-								Console.WriteLine(" Not modified");
+                                Console.Error.WriteLine(" Not modified");
 								continue;
 							}
 							throw;

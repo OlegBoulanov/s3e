@@ -173,7 +173,7 @@ namespace s3.Commands
                                     Path.GetFileName(file), maxFileBytes / 1024 / 1024 / 1024));
                             else
                             {
-                                Console.WriteLine(key);
+                                Console.Error.WriteLine(key);
                                 svc.put(bucket, key, fs, headers).Connection.Close();
                             }
                         }
@@ -201,7 +201,7 @@ namespace s3.Commands
                                         fs.Position = positionBeforeChecksum;
                                 }
 
-                                Console.WriteLine(thisKey);
+                                Console.Error.WriteLine(thisKey);
                                 svc.put(bucket, thisKey, fs, headers, fs.Position, putBytes).Connection.Close();
                             }
 

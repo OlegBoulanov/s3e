@@ -241,7 +241,7 @@ namespace com.amazon.s3
                     catch { }
                     retries += 1;
                     if (verbose)
-                        Console.WriteLine(string.Format("Put failed on attempt {0}: {1}", retries.ToString(), failEx.Message));
+                        Console.Error.WriteLine(string.Format("Put failed on attempt {0}: {1}", retries.ToString(), failEx.Message));
                     if (retries >= maxRetries)
                         throw failEx;
                     else

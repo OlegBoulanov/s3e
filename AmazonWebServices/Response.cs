@@ -113,7 +113,7 @@ namespace com.amazon.s3
                     if (contentLength == -1 && (statusCode == null || (statusCode >= 500 && statusCode < 600)))
                     {
                         if (AWSAuthConnection.verbose)
-                            Console.WriteLine("Rebuilding request automatically");
+                            Console.Error.WriteLine("Rebuilding request automatically");
 
                         // we can rebuild the request here and retry it (sadly there's no request.Reset())
                         WebRequest newRequest = WebRequest.Create(request.RequestUri);

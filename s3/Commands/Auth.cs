@@ -39,12 +39,12 @@ namespace s3.Commands
 
         public static void GetAuthInteractively(ref string key, ref string secret, ref string password)
         {
-            Console.WriteLine("Do you want to encrypt your Secret Access Key with a password? (yes/no)");
+            Console.Error.WriteLine("Do you want to encrypt your Secret Access Key with a password? (yes/no)");
             if (Console.ReadLine().StartsWith("y", StringComparison.InvariantCultureIgnoreCase))
             {
-                Console.Write("Please choose an encryption password: ");
+                Console.Error.Write("Please choose an encryption password: ");
                 password = ReadPassword();
-                Console.Write("Please enter your chosen password again: ");
+                Console.Error.Write("Please enter your chosen password again: ");
                 string p2 = ReadPassword();
                 if (!password.Equals(p2))
                     throw new Exception("Passwords don't match");
@@ -52,9 +52,9 @@ namespace s3.Commands
             else
                 password = null;
 
-            Console.Write("Enter your Access Key Id: ");
+            Console.Error.Write("Enter your Access Key Id: ");
             key = Console.ReadLine().Trim();
-            Console.Write("Enter your Secret Access Key: ");
+            Console.Error.Write("Enter your Secret Access Key: ");
             secret = ReadPassword();
         }
 
@@ -68,7 +68,7 @@ namespace s3.Commands
                 if (!char.IsControl(info.KeyChar))
                 {
                     password += info.KeyChar;
-                    Console.Write(".");
+                    Console.Error.Write(".");
                 }
                 else if (info.Key == ConsoleKey.Backspace)
                 {
@@ -76,7 +76,7 @@ namespace s3.Commands
                     {
                         password = password.Substring
                         (0, password.Length - 1);
-                        Console.Write("\b \b");
+                        Console.Error.Write("\b \b");
                     }
                 }
                 info = Console.ReadKey(true);
@@ -132,7 +132,7 @@ namespace s3.Commands
 
             if (Settings.Default.Encrypted)
             {
-                Console.Write("Please enter your encryption password: ");
+                Console.Error.Write("Please enter your encryption password: ");
                 string password = ReadPassword();
 
                 MD5CryptoServiceProvider HashProvider = new MD5CryptoServiceProvider();

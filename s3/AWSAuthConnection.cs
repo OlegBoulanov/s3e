@@ -25,7 +25,7 @@ namespace com.amazon.s3
             {
                 headers.Add("Content-Type", mime);
                 if (verbose)
-                    Console.WriteLine("Using MIME type " + mime);
+                    Console.Error.WriteLine("Using MIME type " + mime);
             }
 
             return headers;

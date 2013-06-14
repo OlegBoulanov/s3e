@@ -58,7 +58,7 @@ namespace s3.Commands
                 allResp.Connection.Close();
                 foreach (Bucket b in allResp.Buckets)
                     Console.WriteLine(b.Name);
-                Console.WriteLine(string.Format("{0} files listed", allResp.Buckets.Count));
+                Console.Error.WriteLine(string.Format("{0} files listed", allResp.Buckets.Count));
             }
             else
             {
@@ -73,7 +73,7 @@ namespace s3.Commands
                     fileCount++;
                 }
 
-                Console.WriteLine(string.Format("{0} files listed", fileCount));
+                Console.Error.WriteLine(string.Format("{0} files listed", fileCount));
             }
         }
     }

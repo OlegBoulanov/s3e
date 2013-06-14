@@ -108,14 +108,14 @@ namespace s3.Options
                 string filename = Path.Combine(directory, e.Key.Substring(baseKey.Length));
                 if (!File.Exists(filename) && !Directory.Exists(filename))
                 {
-                    Console.Write(e.Key + "... ");
+                    Console.Error.Write(e.Key + "... ");
                     if (Yes.Confirm("Delete this key? [y/N]"))
                     {
                         svc.delete(bucket, e.Key, null).Connection.Close();
-                        Console.WriteLine(" deleted.");
+                        Console.Error.WriteLine(" deleted.");
                     }
                     else
-                        Console.WriteLine(" ignored.");
+                        Console.Error.WriteLine(" ignored.");
 
                 }
             }
