@@ -19,6 +19,7 @@ namespace s3.Commands
         bool big, sub, md5;
         string resource, filename;
         string bucket, key;
+        Regex regex = null;
         bool explicitFilename;
         s3.Options.Install install;
 
@@ -37,6 +38,11 @@ namespace s3.Commands
             {
                 if (Utils.IsLinux) throw new SyntaxException("The /install option is not currently supported on Linux");
                 install =  cl.options[typeof(s3.Options.Install)] as s3.Options.Install;
+            }
+            if (cl.options.ContainsKey(typeof(s3.Options.Rex)))
+            {
+                if (big) throw new SyntaxException("The /rex option is not compatible with the /big option");
+                regex = new Regex((cl.options[typeof(s3.Options.Rex)] as s3.Options.Rex).Parameter, RegexOptions.Compiled);
             }
 
             resource = cl.args[0];
@@ -96,7 +102,7 @@ namespace s3.Commands
                 {
                     while (key.EndsWith("*"))
                         key = key.Substring(0, key.Length - 1);
-                    IterativeList list = new IterativeList(bucket, key);
+                    IterativeList list = new IterativeList(bucket, key, regex);
                     if (list.Count == IterativeList.EntryCount.some && explicitFilename)
                         throw new SyntaxException("You specified a destination filename but there is more than one key; can't copy multiple keys to one file");
                     keys = list;

@@ -1,4 +1,4 @@
-﻿*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/md5] [/install:<msiexec arguments>] [/key:<key> /secret:<secret>]
+﻿*s3 get <bucket>/<keyprefix> [<path>] [/rex:<regex>] [/big] [/sub] [/md5] [/install:<msiexec arguments>] [/key:<key> /secret:<secret>]
 
 Examples:
  s3 get mybucket/pic*
@@ -8,6 +8,8 @@ Examples:
     Gets the specified object(s) from S3. If no filename is supplied then the
     suffix of the key after the final slash is used as the filename, except
     with the /sub option (see below).
+
+	/rex may specify the regular expression to match selected object names against, like /rex:.txt$ (incompatible with /big)
 
     A trailing * on the end of the key is treated as a wildcard, except when 
     the /big option or a full <filename> is specified.

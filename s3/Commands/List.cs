@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using com.amazon.s3;
 
@@ -16,6 +17,7 @@ namespace s3.Commands
         bool listBuckets = false;
         bool showStorageClass = false;
         string bucket, prefix;
+        Regex regex = null;
 
         protected override void Initialise(CommandLine cl)
         {
@@ -39,6 +41,11 @@ namespace s3.Commands
             }
             else
                 throw new SyntaxException("The list command requires either zero or one parameters");
+            
+            if(cl.options.ContainsKey(typeof(s3.Options.Rex)))
+            {
+                regex = new Regex((cl.options[typeof(s3.Options.Rex)] as s3.Options.Rex).Parameter, RegexOptions.Compiled);
+            }
         }
 
         public override void Execute()
@@ -59,7 +66,7 @@ namespace s3.Commands
                     prefix = prefix.Substring(0, prefix.Length - 1);
 
                 int fileCount = 0;
-                foreach (ListEntry e in new IterativeList(bucket, prefix))
+                foreach (ListEntry e in new IterativeList(bucket, prefix, regex))
                 {
                     string storageDescription = (showStorageClass && e.StorageClass.Length > 0) ? e.StorageClass[0] + " " : string.Empty;
                     Console.WriteLine(string.Format("{2}\t{1:0.0}M\t{3}{0}", e.Key, e.Size / (1024 * 1024), e.LastModified, storageDescription));

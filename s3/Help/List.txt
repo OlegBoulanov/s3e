@@ -1,12 +1,13 @@
-﻿*s3 list [<bucket>[/<keyprefix>]] [/key:<key> /secret:<secret>] [/storageclass]
+﻿*s3 list [<bucket>[/<keyprefix>]] [/rex:<regex>] [/key:<key> /secret:<secret>] [/storageclass]
 
 Example:
 s3 list mybucket/pic*
 
-    Lists the keys in the bucket beginning with the keyprefix, if supplied.  A
-    trailing asterisk on the keyprefix is ignored.  With no parameters, gets 
-    the list of buckets.
+    Lists the keys in the bucket beginning with the keyprefix, if supplied.
+    A trailing asterisk on the keyprefix is ignored.  With no parameters, gets the list of buckets.
     
+	/rex may specify the regular expression to match object names against, like /rex:.txt$
+
     /key & /secret allow the Amazon S3 access key and secret key to be passed
     on the command line (even if auth has previously been used).
 
