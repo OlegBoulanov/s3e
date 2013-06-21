@@ -66,15 +66,18 @@ namespace s3.Commands
                     prefix = prefix.Substring(0, prefix.Length - 1);
 
                 int fileCount = 0;
+                long fileSize = 0;
                 foreach (ListEntry e in new IterativeList(bucket, prefix, regex))
                 {
                     string storageDescription = (showStorageClass && e.StorageClass.Length > 0) ? e.StorageClass[0] + " " : string.Empty;
-                    Console.WriteLine(string.Format("{2}\t{1:0.0}M\t{3}{0}", e.Key, e.Size / (1024 * 1024), e.LastModified, storageDescription));
+                    Console.WriteLine(string.Format("{2}\t{1,14:##,#}\t{3}{0}", e.Key, e.Size, e.LastModified, storageDescription));
                     fileCount++;
+                    fileSize += e.Size;
                 }
 
-                Console.Error.WriteLine(string.Format("{0} files listed", fileCount));
+                Console.Error.WriteLine(string.Format("{0} files, {1:##,#} bytes", fileCount, fileSize));
             }
         }
+
     }
 }
