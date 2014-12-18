@@ -1,0 +1,11 @@
+﻿*s3 delete [<bucket>[/<keyprefix>]] [/rex:<regex>] [/key:<key> /secret:<secret>] [/storageclass]
+
+Example:
+s3 delete mybucket/pic* /rex:.+\.jpg
+
+	Deletes from the bucket all the objects with names specified by prefix and matching optional regular expression
+    
+	/rex may specify the regular expression to match object names against, like /rex:.txt$
+
+    /key & /secret allow the Amazon S3 access key and secret key to be passed
+    on the command line (even if auth has previously been used).

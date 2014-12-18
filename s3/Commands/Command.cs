@@ -16,6 +16,7 @@ namespace s3.Commands
             typeof(Help),
             typeof(Instances),
             typeof(List),
+            typeof(Delete),
             typeof(Put),
             typeof(Snapshot),
             typeof(Snapshots)

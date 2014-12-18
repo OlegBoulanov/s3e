@@ -493,6 +493,7 @@
     <Compile Include="CommandLine.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\Auth.cs" />
+    <Compile Include="Commands\Delete.cs" />
     <Compile Include="Commands\DeleteSnapshots.cs" />
     <Compile Include="Commands\Snapshots.cs" />
     <Compile Include="Commands\Instances.cs" />
@@ -601,6 +602,9 @@
       <Link>Amazon.EC2\Model\DeleteSnapshotResponse.xslt</Link>
       <LogicalName>DeleteSnapshotResponse.xslt</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Help\Delete.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

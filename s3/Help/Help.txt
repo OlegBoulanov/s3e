@@ -22,11 +22,17 @@ Examples:
 s3 get mybucket/pic*
 s3 get mybucket/pictures/ /sub
             
-*s3 list [<bucket>[/<keyprefix>]] [/key:<key> /secret:<secret>]
+*s3 list [<bucket>[/<keyprefix>]] [/rex:<regex>] [/key:<key> /secret:<secret>]
     Lists keys or buckets.  Type 's3 help list' for more details.
 
 Example:
-s3 list mybucket/pic [/key:<key> /secret:<secret>]
+s3 list mybucket/pic
+            
+*s3 delete [<bucket>[/<keyprefix>]] [/rex:<regex>] [/key:<key> /secret:<secret>]
+    Deletes objects.  Type 's3 help delete' for more details.
+
+Example:
+s3 delete mybucket/pic /rex:.+\.jpg
             
 *s3 instances [/key:<key> /secret:<secret>]
     Lists the current EC2 instances on a per-AMI basis.
