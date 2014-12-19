@@ -53,10 +53,22 @@ namespace s3.Commands
             long fileSize = 0;
             foreach (ListEntry e in new IterativeList(bucket, prefix, regex))
             {
-                Response response = svc.delete(bucket, e.Key, null);
-                Console.WriteLine(string.Format("{0}\t{1,14:##,#}\t{2} {3}", e.LastModified, e.Size, e.Key, response.Status == System.Net.HttpStatusCode.NoContent ? "-" : response.Status.ToString()));
-                fileCount++;
-                fileSize += e.Size;
+                string prompt = string.Format("{0}\t{1,14:##,#}\t{2}", e.LastModified, e.Size, e.Key);
+                if (Yes.Confirm(prompt))
+                {
+                    Response response = svc.delete(bucket, e.Key, null);
+                    response.Connection.Close();
+                    if (response.Status != System.Net.HttpStatusCode.NoContent)
+                    {
+                        Console.Error.WriteLine(" error: {0}", response.Status);
+                    }
+                    //Console.WriteLine(string.Format("{0}\t{1,14:##,#}\t{2} {3}", e.LastModified, e.Size, e.Key, response.Status == System.Net.HttpStatusCode.NoContent ? "-" : response.Status.ToString()));
+                    fileCount++;
+                    fileSize += e.Size;
+                }
+                else
+                {
+                }
             }
 
             Console.Error.WriteLine(string.Format("{0} files, {1:##,#} bytes", fileCount, fileSize));
