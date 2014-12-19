@@ -49,7 +49,7 @@ namespace s3.Commands
             if (prefix.EndsWith("*"))
                 prefix = prefix.Substring(0, prefix.Length - 1);
 
-            int fileCount = 0;
+            int fileCount = 0, errorCount = 0;
             long fileSize = 0;
             foreach (ListEntry e in new IterativeList(bucket, prefix, regex))
             {
@@ -61,17 +61,26 @@ namespace s3.Commands
                     if (response.Status != System.Net.HttpStatusCode.NoContent)
                     {
                         Console.Error.WriteLine(" error: {0}", response.Status);
+                        errorCount++;
                     }
-                    //Console.WriteLine(string.Format("{0}\t{1,14:##,#}\t{2} {3}", e.LastModified, e.Size, e.Key, response.Status == System.Net.HttpStatusCode.NoContent ? "-" : response.Status.ToString()));
-                    fileCount++;
-                    fileSize += e.Size;
+                    else
+                    {
+                        fileCount++;
+                        fileSize += e.Size;
+                    }
                 }
                 else
                 {
                 }
             }
-
-            Console.Error.WriteLine(string.Format("{0} files, {1:##,#} bytes", fileCount, fileSize));
+            if (0 == errorCount)
+            {
+                Console.Error.WriteLine(string.Format("{0} files, {1:##,#} bytes", fileCount, fileSize));
+            }
+            else
+            {
+                Console.Error.WriteLine(string.Format("{0} files, {1:##,#} bytes; {2} errors", fileCount, fileSize, errorCount));
+            }
         }
 
     }
