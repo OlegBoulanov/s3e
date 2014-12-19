@@ -18,7 +18,7 @@ namespace s3.Options
             Console.Error.Write(prompt);
             if (yesToAll)
             {
-                Console.Error.WriteLine(" ? all");
+                Console.Error.WriteLine(" ? yes");
                 return true;
             }
             else
