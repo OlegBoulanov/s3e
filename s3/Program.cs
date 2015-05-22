@@ -39,7 +39,7 @@ namespace s3
     {
         static int Main(string[] originalArgs)
         {
-            bool debugOption = false;
+            bool verboseOption = true;
             initialise();
 
             try
@@ -73,8 +73,8 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                         Auth.LoadAuth(ref AWSAuthConnection.OUR_ACCESS_KEY_ID, ref AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
                 }
 
-                debugOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
-                if (debugOption)
+                verboseOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
+                if (verboseOption)
                     AWSAuthConnection.verbose = true;
 
                 if (!cl.options.ContainsKey(typeof(s3.Options.NoGUI)))
@@ -89,21 +89,21 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
             catch (SyntaxException ex)
             {
                 Console.Error.WriteLine("Syntax error: {0}\nType 's3 help' for assistance.", ex.Message);
-                if (debugOption)
+                if (verboseOption)
                     Console.Error.WriteLine(ex.StackTrace);
                 return 3;
             }
             catch (FileNotFoundException ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                if (debugOption)
+                if (verboseOption)
                     Console.Error.WriteLine(ex.StackTrace);
                 return 2;
             }
             catch (Amazon.EC2.AmazonEC2Exception ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                if (debugOption)
+                if (verboseOption)
                     Console.Error.WriteLine(ex.StackTrace);
             }
             catch (System.Net.WebException ex)
@@ -115,7 +115,7 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                     {
                         S3Error error = ser.Deserialize(tr) as S3Error;
                         Console.Error.WriteLine(string.Format("{0}\t{1}", error.Code, error.Message));
-                        if (debugOption)
+                        if (verboseOption)
                         {
                             Console.Error.WriteLine(ex.Message);
                             Console.Error.WriteLine(ex.StackTrace);
@@ -125,7 +125,7 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                     {
                         // couldn't read XML so fall back to displaying the whole Message string from the original exception
                         Console.Error.WriteLine(ex.Message);
-                        if (debugOption)
+                        if (verboseOption)
                             Console.Error.WriteLine(ex.StackTrace);
                     }
                 }
@@ -134,8 +134,8 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
-                if (debugOption)
+                Console.Error.WriteLine("Exception({0}): {1}", ex.GetType().Name, ex.Message);
+                if (verboseOption)
                     Console.Error.WriteLine(ex.StackTrace);
                 return 3;
             }
