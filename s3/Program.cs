@@ -32,6 +32,7 @@ using com.amazon.s3;
 using s3.Commands;
 using s3.Options;
 using s3.Properties;
+using s3.Windows;
 
 namespace s3
 {
@@ -41,12 +42,29 @@ namespace s3
         {
             bool verboseOption = true;
             initialise();
-
+            
             try
             {
                 CommandLine cl = new CommandLine(originalArgs);
 
-                if (!(cl.command is Auth || cl.command is Help))
+                if (cl.options.ContainsKey(typeof(s3.Options.Profile)))
+                {
+                    Profile profile = (Profile)cl.options[typeof(s3.Options.Profile)];
+                    string userProfileName = profile.ParameterIsPresent ? profile.Parameter : "default";
+                    string userProfilePath = Path.Combine(Environment.ExpandEnvironmentVariables("%USERPROFILE%"), $".aws{Path.DirectorySeparatorChar}credentials");
+                    if (File.Exists(userProfilePath))
+                    {
+                        string accessKey = IniReader.Value(userProfilePath, userProfileName, "aws_access_key_id");
+                        string secretKey = IniReader.Value(userProfilePath, userProfileName, "aws_secret_access_key");
+                        if (!string.IsNullOrEmpty(accessKey) && !string.IsNullOrEmpty(secretKey))
+                        {
+                            Settings.Default.AccessKeyId = AWSAuthConnection.OUR_ACCESS_KEY_ID = accessKey;
+                            Settings.Default.AccessKeySecret = AWSAuthConnection.OUR_SECRET_ACCESS_KEY = secretKey;
+                            Settings.Default.Encrypted = false;
+                        }
+                    }
+                }
+                else if (!(cl.command is Auth || cl.command is Help))
                 {
                     if ((Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "") && !Key.KeyOverridden)
                     {
@@ -95,7 +113,7 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
             }
             catch (FileNotFoundException ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{ex.Message} {ex.FileName}");
                 if (verboseOption)
                     Console.Error.WriteLine(ex.StackTrace);
                 return 2;

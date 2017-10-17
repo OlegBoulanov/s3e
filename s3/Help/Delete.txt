@@ -1,4 +1,4 @@
-﻿*s3 delete [<bucket>[/<keyprefix>]] [/rex:<regex>] [/yes] [/key:<key> /secret:<secret>] [/storageclass]
+﻿*s3 delete [<bucket>[/<keyprefix>]] [/rex:<regex>] [/yes] [/key:<key> /secret:<secret> | /profile:<profile>] [/storageclass]
 
 Example:
 s3 delete mybucket/pic* /rex:.+\.jpg
@@ -11,3 +11,6 @@ s3 delete mybucket/pic* /rex:.+\.jpg
 
     /key & /secret allow the Amazon S3 access key and secret key to be passed
     on the command line (even if auth has previously been used).
+
+	/profile allows to use Amazon credentials from specified (or default) user profile
+    

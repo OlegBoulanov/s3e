@@ -1,5 +1,5 @@
 ﻿*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] 
-        [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret>]
+        [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret> | /profile:<profile>]
 		[/storageclass:<storageclass>]
 
 Examples:
@@ -33,6 +33,8 @@ s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
     
     /key & /secret allow the Amazon S3 access key and secret key to be passed
     on the command line (even if auth has previously been used).
+
+	/profile allows to use Amazon credentials from specified (or default) user profile
     
     /nogui disables the graphical progress window.
 
