@@ -502,6 +502,7 @@
     <Compile Include="Commands\Get.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Put.cs" />
+    <Compile Include="Options\Profile.cs" />
     <Compile Include="Options\Rex.cs" />
     <Compile Include="Windows\IniReader.cs" />
     <Compile Include="IterativeList.cs" />
