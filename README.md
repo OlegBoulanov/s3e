@@ -7,3 +7,4 @@ Added functionality:
 - automatic installation of downloaded *.msi files, with properties taken from *.ini
 - local folder creation during get /sub, with names derived from object key/prefix
 - delete command
+- /profile[:name] option
