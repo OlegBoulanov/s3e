@@ -507,6 +507,7 @@
     <Compile Include="Commands\Put.cs" />
     <Compile Include="Options\Profile.cs" />
     <Compile Include="Options\Rex.cs" />
+    <Compile Include="Windows\IniFile.cs" />
     <Compile Include="Windows\IniReader.cs" />
     <Compile Include="IterativeList.cs" />
     <Compile Include="Options\Days.cs" />
@@ -541,7 +542,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MsiProperties.cs" />
+    <Compile Include="Windows\IniSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

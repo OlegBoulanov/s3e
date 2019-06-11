@@ -38,26 +38,28 @@ namespace s3.Options
                 Dictionary<string, bool> extInfo = ItemsToInstall[fileBase];
                 string msiPath = null;
                 string msiExecKeys = msiExecKeysInstall;
-                Windows.MsiProperties msiProps = null;
+                Windows.IniFile iniFile = Windows.IniFile.Read(fileBase + iniExtension);
+                Windows.IniSection msiInfo = iniFile["$msi$"];
+                Windows.IniSection msiProps = iniFile["$props$"];
+                msiPath = fileBase + msiExtension;
+                bool iniDownloaded = extInfo[iniExtension];
+                bool msiDownloaded = extInfo[msiExtension];
+                // got ini? read the props and decide if reinstall is needed
+                if (extInfo.ContainsKey(iniExtension))
+                {
+                    // is it new? (assume props change in that case)
+                    string iniPath = fileBase + iniExtension;
+                }
                 if (extInfo.ContainsKey(msiExtension))
                 {
-                    msiPath = fileBase + msiExtension;
-                    bool msiDownloaded = extInfo[msiExtension];
-                    // got ini? read the props and decide if reinstall is needed
-                    if (extInfo.ContainsKey(iniExtension))
-                    {
-                        // is it new? (assume props change in that case)
-                        bool iniDownloaded = extInfo[iniExtension];
-                        string iniPath = fileBase + iniExtension;
-                        msiProps = new Windows.MsiProperties();
-                        msiProps.Read(iniPath);
-                        // if only props changed, we'd need to do full reinstall to set them...
-                        if (iniDownloaded && !msiDownloaded) msiExecKeys = msiExecKeysReinstallAll;
-                    }
-                    else
-                    {
-                        // should we remove existing local one too?
-                    }
+                    // if only props changed, we'd need to do full reinstall to set them...
+                    if (iniDownloaded && !msiDownloaded) msiExecKeys = msiExecKeysReinstallAll;
+                }
+                else
+                {
+                    // there is no *.msi on remote
+                    // should we remove existing local one too?
+                    // try indirection
                 }
                 // got msi? Install it.
                 if (!string.IsNullOrEmpty(msiPath))

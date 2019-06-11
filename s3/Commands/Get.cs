@@ -17,7 +17,7 @@ namespace s3.Commands
     class Get : Command
     {
         bool big, sub, md5;
-        string resource, filename;
+        string filename;
         string bucket, key;
         Regex regex = null;
         bool explicitFilename;
@@ -32,20 +32,23 @@ namespace s3.Commands
 
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
-            if (big && sub) throw new SyntaxException("The /big option is not currently compatible with the /sub option");
+            if (big && sub)
+                throw new SyntaxException("The /big option is not currently compatible with the /sub option");
             md5 = cl.options.ContainsKey(typeof(s3.Options.Md5));
             if(cl.options.ContainsKey(typeof(s3.Options.Install)))
             {
-                if (Utils.IsLinux) throw new SyntaxException("The /install option is not currently supported on Linux");
+                if (Utils.IsLinux)
+                    throw new SyntaxException("The /install option is not currently supported on Linux");
                 install =  cl.options[typeof(s3.Options.Install)] as s3.Options.Install;
             }
             if (cl.options.ContainsKey(typeof(s3.Options.Rex)))
             {
-                if (big) throw new SyntaxException("The /rex option is not compatible with the /big option");
+                if (big)
+                    throw new SyntaxException("The /rex option is not compatible with the /big option");
                 regex = new Regex((cl.options[typeof(s3.Options.Rex)] as s3.Options.Rex).Parameter, RegexOptions.Compiled);
             }
 
-            resource = cl.args[0];
+            string resource = cl.args[0];
             int firstSlash = resource.IndexOf("/");
             if (firstSlash == -1)
             {
@@ -156,103 +159,7 @@ namespace s3.Commands
 
                     int sequence = 0;
 
-                    foreach (ListEntry entry in keys)
-                    {
-						string thisFilename = null;
-						DateTime thisLastModified = DateTime.MinValue;
-						if (!big)
-                        {
-
-                            if (sub)
-                            {
-                                if ("*" == Path.GetFileNameWithoutExtension(filename))
-                                {
-                                    // replace star with key/prefix:
-                                    //  bucket/path/prefix/[files] c:\local\* /sub ==> c:\local\path\prefix\[files]
-                                    thisFilename = Path.Combine(Path.GetDirectoryName(filename), KeyToFilename(entry.Key));
-                                }
-                                else
-                                {
-                                    // strip key/prefix, leaving only filename:
-                                    //  bucket/path/prefix/[files] c:\local\ /sub ==> c:\local\[files]
-                                    thisFilename = Path.Combine(filename, KeyToFilename(entry.Key.Substring(key.Length)));
-                                }
-                                string directoryName = Path.GetDirectoryName(thisFilename);
-                                if (!Directory.Exists(directoryName))
-                                {
-                                    Directory.CreateDirectory(directoryName);
-                                }
-                            }
-                            else if (explicitFilename)
-                            {
-                                thisFilename = filename;
-                            }
-                            else
-                            {
-                                thisFilename = entry.Key.Substring(entry.Key.LastIndexOf("/") + 1);
-                            }
-							if(Path.GetFileName (thisFilename).Trim ().Length == 0)
-							{
-								continue;
-							}
-							thisLastModified = File.GetLastWriteTimeUtc (thisFilename);
-							fs = null;
-                        }
-                        else
-                        {
-                            if (!entry.Key.EndsWith(string.Format(".{0:000}", sequence)))
-                            {
-                                Console.Error.WriteLine(string.Format("Warning: The download has completed because there is no chunk number {0}, but there are chunks on S3 with higher numbers.  These chunks were probably uploaded to S3 when the file was larger than it is now, but it could indicate a missing chunk.  To surpress this message, delete the later chunks.", sequence));
-                                break;
-                            }
-                        }
-
-						Console.Write(string.Format("{0}/{1} {2} ", bucket, entry.Key, s3.Utils.FormatFileSize(entry.Size)));
-
-                        if (null != install)
-                        {
-                            install.SetFile(thisFilename, !File.Exists(thisFilename));
-                        }
-
-                        try
-						{
-							GetResponse getResp = svc.getIfModifiedSince(bucket, entry.Key, thisLastModified, true);    // may throw 304
-
-							if(fs == null) fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
-
-                        	StreamToStream(getResp.Object.Stream, fs, md5 ? getResp.Connection.Headers["ETag"] : null, entry.Key, entry.Size);
-
-							getResp.Object.Stream.Close();
-
-                        	if (!big)
-                            	fs.Close();
-
-                        	getResp.Connection.Close();
-                        	sequence++;
-
-							File.SetLastWriteTimeUtc (thisFilename, entry.LastModified);
-
-                            Console.WriteLine();
-
-                            if (null != install)
-                            {
-                                // newer file downloaded
-                                install.SetFile(thisFilename, true);
-                            }
-                        }
-						catch(WebException x)
-						{
-							if(x.Message.Contains ("(304)"))
-							{
-                                Console.WriteLine(" Not modified");
-								continue;
-							}
-							throw;
-						}
-                    }
-
-                    if (big)
-                        fs.Close();
+                    GetObjects(keys, ref sequence, ref fs, svc);
 
                     if (null != install)
                     {
@@ -270,6 +177,106 @@ namespace s3.Commands
                     Console.CancelKeyPress -= deletePartialFileHandler;
                 }
             }
+        }
+
+        void GetObjects(IEnumerable<ListEntry> keys, ref int sequence, ref FileStream fs, AWSAuthConnection svc)
+        {
+            foreach (ListEntry entry in keys)
+            {
+                string thisFilename = null;
+                DateTime thisLastModified = DateTime.MinValue;
+                if (!big)
+                {
+
+                    if (sub)
+                    {
+                        if ("*" == Path.GetFileNameWithoutExtension(filename))
+                        {
+                            // replace star with key/prefix:
+                            //  bucket/path/prefix/[files] c:\local\* /sub ==> c:\local\path\prefix\[files]
+                            thisFilename = Path.Combine(Path.GetDirectoryName(filename), KeyToFilename(entry.Key));
+                        }
+                        else
+                        {
+                            // strip key/prefix, leaving only filename:
+                            //  bucket/path/prefix/[files] c:\local\ /sub ==> c:\local\[files]
+                            thisFilename = Path.Combine(filename, KeyToFilename(entry.Key.Substring(key.Length)));
+                        }
+                        string directoryName = Path.GetDirectoryName(thisFilename);
+                        if (!Directory.Exists(directoryName))
+                        {
+                            Directory.CreateDirectory(directoryName);
+                        }
+                    }
+                    else if (explicitFilename)
+                    {
+                        thisFilename = filename;
+                    }
+                    else
+                    {
+                        thisFilename = entry.Key.Substring(entry.Key.LastIndexOf("/") + 1);
+                    }
+                    if (Path.GetFileName(thisFilename).Trim().Length == 0)
+                    {
+                        continue;
+                    }
+                    thisLastModified = File.GetLastWriteTimeUtc(thisFilename);
+                    fs = null;
+                }
+                else
+                {
+                    if (!entry.Key.EndsWith(string.Format(".{0:000}", sequence)))
+                    {
+                        Console.Error.WriteLine(string.Format("Warning: The download has completed because there is no chunk number {0}, but there are chunks on S3 with higher numbers.  These chunks were probably uploaded to S3 when the file was larger than it is now, but it could indicate a missing chunk.  To surpress this message, delete the later chunks.", sequence));
+                        break;
+                    }
+                }
+
+                Console.Write(string.Format("{0}/{1} {2} ", bucket, entry.Key, s3.Utils.FormatFileSize(entry.Size)));
+
+                if (null != install)
+                {
+                    install.SetFile(thisFilename, !File.Exists(thisFilename));
+                }
+
+                try
+                {
+                    GetResponse getResp = svc.getIfModifiedSince(bucket, entry.Key, thisLastModified, true);    // may throw 304
+
+                    if (fs == null) fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
+
+                    StreamToStream(getResp.Object.Stream, fs, md5 ? getResp.Connection.Headers["ETag"] : null, entry.Key, entry.Size);
+
+                    getResp.Object.Stream.Close();
+
+                    if (!big)
+                        fs.Close();
+
+                    getResp.Connection.Close();
+                    sequence++;
+
+                    File.SetLastWriteTimeUtc(thisFilename, entry.LastModified);
+
+                    Console.WriteLine();
+
+                    if (null != install)
+                    {
+                        // newer file downloaded
+                        install.SetFile(thisFilename, true);
+                    }
+                }
+                catch (WebException x)
+                {
+                    if (x.Message.Contains("(304)"))
+                    {
+                        Console.WriteLine(" Not modified");
+                        continue;
+                    }
+                    throw;
+                }
+            }
+            if (big)
+                fs.Close();
         }
 
         private string KeyToFilename(string key)
